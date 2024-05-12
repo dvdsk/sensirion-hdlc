@@ -17,8 +17,19 @@ travis-ci = { repository = "iohe/sensirion-hdlc", branch = "master" }
 coveralls = { repository = "iohe/sensirion-hdlc", branch = "master", service = "github" }
 maintenance = { status = "actively-developed" }
 
+[dependencies]
+defmt = { version = "0.3", optional = true }
+thiserror = { version = "1.0.38", optional = true }
+serde = { version = "1.0", features = ["derive"], default-features = false, optional = true}
+postcard = { version = "1.0.8", features = ["experimental-derive"], optional = true }
+
 [dependencies.arrayvec]
 version = "0.5.1"
 default-features = false # do not include the default features, and optionally
                          # cherry-pick individual features
-features = []
+[features]
+defmt = ["dep:defmt"]
+thiserror = ["dep:thiserror"]
+serde = ["dep:serde"]
+# derive's MaxSize on Error enum
+postcard = ["dep:postcard"]

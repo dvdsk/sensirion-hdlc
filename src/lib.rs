@@ -47,10 +47,13 @@
 //! assert_eq!(result[0..result.len()], cmp);
 //! ```
 
-#![no_std]
+#![cfg_attr(not(feature = "thiserror"), no_std)]
 #![deny(missing_docs)]
 
 use arrayvec::ArrayVec;
+
+mod error;
+pub use error::HDLCError;
 
 /// Special Character structure for holding the encode and decode values.
 ///
@@ -160,7 +163,10 @@ pub fn calculate_checksum(data: &[u8]) -> u8 {
 /// let input: Vec<u8> = vec![0x01, 0x50, 0x00, 0x00, 0x00, 0x05, 0x80, 0x09];
 /// let op_vec = sensirion_hdlc::encode(&input.to_vec(), chars);
 /// ```
-pub fn encode(data: &[u8], s_chars: SpecialChars) -> Result<ArrayVec<[u8; 1024]>, HDLCError> {
+pub fn encode(
+    data: &[u8],
+    s_chars: SpecialChars,
+) -> Result<ArrayVec<[u8; 1024]>, HDLCError> {
     if data.len() > 260 {
         return Err(HDLCError::TooMuchData);
     }
@@ -233,7 +239,10 @@ pub fn encode(data: &[u8], s_chars: SpecialChars) -> Result<ArrayVec<[u8; 1024]>
 /// let input =[ 0x7E, 0x01, 0x50, 0x00, 0x00, 0x00, 0x05, 0x80, 0x09, 0x7E];
 /// let op_vec = sensirion_hdlc::decode(&input.to_vec(), chars);
 /// ```
-pub fn decode(input: &[u8], s_chars: SpecialChars) -> Result<ArrayVec<[u8; 1024]>, HDLCError> {
+pub fn decode(
+    input: &[u8],
+    s_chars: SpecialChars,
+) -> Result<ArrayVec<[u8; 1024]>, HDLCError> {
     if input.len() < 4 {
         return Err(HDLCError::TooFewData);
     }
@@ -281,29 +290,6 @@ pub fn decode(input: &[u8], s_chars: SpecialChars) -> Result<ArrayVec<[u8; 1024]
     }
 
     Ok(output)
-}
-
-#[derive(Debug, PartialEq)]
-/// Common error for HDLC actions.
-pub enum HDLCError {
-    /// Catches duplicate special characters.   
-    DuplicateSpecialChar,
-    /// Catches a random sync char in the data.
-    FendCharInData,
-    /// Catches a random swap char, `fesc`, in the data with no `tfend` or `tfesc`.
-    MissingTradeChar,
-    /// No first fend on the message.    
-    MissingFirstFend,
-    /// No final fend on the message.
-    MissingFinalFend,
-    /// Too much data to be converted into a SHDLC frame
-    TooMuchData,
-    /// Too few data to be converted from a SHDLC frame
-    TooFewData,
-    /// Checksum for decoded Frame is invalid
-    InvalidChecksum,
-    /// More than 259 bytes resulted after decoding SHDLC frame
-    TooMuchDecodedData,
 }
 
 #[cfg(test)]
