@@ -12,17 +12,16 @@ const ESCAPED: [(u8, u8); 4] = [(0x7d, 0x5d), (0x7e, 0x5e), (0x11, 0x31), (0x13,
 
 /// Produces escaped (encoded) message surrounded with `FEND`
 ///
-/// # Error
+/// # Errors
 ///
-/// If the passed MAX_ENCODED_SIZE is too small this returns
+/// If the passed `MAX_ENCODED_SIZE` is too small this returns
 /// `HDLCError::TooMuchData`
 ///
 /// # Example
 /// ```rust
 /// extern crate sensirion_hdlc;
-/// let chars = sensirion_hdlc::SpecialChars::default();
-/// let input: Vec<u8> = vec![0x01, 0x50, 0x00, 0x00, 0x00, 0x05, 0x80, 0x09];
-/// let op_vec = sensirion_hdlc::encode(&input.to_vec(), chars);
+/// let input = [0x01, 0x50, 0x00, 0x00, 0x00, 0x05, 0x80, 0x09];
+/// let op_vec = sensirion_hdlc::encode::<16>(&input);
 /// ```
 pub fn encode<const MAX_ENCODED_SIZE: usize>(
     data: &[u8],
@@ -51,7 +50,7 @@ pub fn encode<const MAX_ENCODED_SIZE: usize>(
 
 /// Produces unescaped (decoded) message without `FEND` characters.
 ///
-/// # Error
+/// # Errors
 /// The following errors can occur while decoding:
 ///
 /// - [`HDLCError::TooMuchData`]
@@ -67,9 +66,8 @@ pub fn encode<const MAX_ENCODED_SIZE: usize>(
 /// # Example
 /// ```rust
 /// extern crate sensirion_hdlc;
-/// let chars = sensirion_hdlc::SpecialChars::default();
 /// let input =[ 0x7E, 0x01, 0x50, 0x00, 0x00, 0x00, 0x05, 0x80, 0x09, 0x7E];
-/// let op_vec = sensirion_hdlc::decode(&input.to_vec(), chars);
+/// let op_vec = sensirion_hdlc::decode::<10>(&input);
 /// ```
 pub fn decode<const MAX_DECODED_SIZE: usize>(
     input: &[u8],
@@ -120,7 +118,7 @@ mod tests {
     fn encode_start_measumement() {
         let mosi_data = [0x00, 0x00, 0x02, 0x01, 0x03, 0xf9];
         let expected = [0x7e, 0x00, 0x00, 0x02, 0x01, 0x03, 0xf9, 0x7e];
-        let encoded: Vec<u8, 10> = encode(&mosi_data).unwrap();
+        let encoded: Vec<u8, 20> = encode(&mosi_data).unwrap();
         assert_eq!(encoded[0..encoded.len()], expected);
     }
 
@@ -128,7 +126,7 @@ mod tests {
     fn encode_test() {
         let mosi_data = [0x00, 0x01, 0x00, 0xfe];
         let expected = [0x7e, 0x00, 0x01, 0x00, 0xfe, 0x7e];
-        let encoded: Vec<u8, 10> = encode(&mosi_data).unwrap();
+        let encoded: Vec<u8, 15> = encode(&mosi_data).unwrap();
         assert_eq!(encoded[0..encoded.len()], expected);
     }
 

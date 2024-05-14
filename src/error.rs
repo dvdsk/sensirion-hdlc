@@ -41,8 +41,8 @@ pub enum HDLCError {
     /// Checksum for decoded Frame is invalid
     #[cfg_attr(feature = "thiserror", error("Checksum for decoded Frame is invalid"))]
     InvalidChecksum,
-    /// Too much data to encode or decode, increase the MAX_ENCODED_SIZE or
-    /// MAX_DECODED_SIZE
+    /// Too much data to encode or decode, increase the `MAX_ENCODED_SIZE` or
+    /// `MAX_DECODED_SIZE`
     #[cfg_attr(
         feature = "thiserror",
         error(" Too much data to encode or decode, increase the MAX_ENCODED_SIZE or MAX_DENCODED_SIZE")
