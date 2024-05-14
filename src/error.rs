@@ -32,12 +32,6 @@ pub enum HDLCError {
     /// No final fend on the message.
     #[cfg_attr(feature = "thiserror", error("No final fend on the message."))]
     MissingFinalFend,
-    /// Too much data to be converted into a SHDLC frame
-    #[cfg_attr(
-        feature = "thiserror",
-        error("Too much data to be converted into a SHDLC frame")
-    )]
-    TooMuchData,
     /// Too few data to be converted from a SHDLC frame
     #[cfg_attr(
         feature = "thiserror",
@@ -47,10 +41,18 @@ pub enum HDLCError {
     /// Checksum for decoded Frame is invalid
     #[cfg_attr(feature = "thiserror", error("Checksum for decoded Frame is invalid"))]
     InvalidChecksum,
-    /// More than 259 bytes resulted after decoding SHDLC frame
+    /// Too much data to encode or decode, increase the MAX_ENCODED_SIZE or
+    /// MAX_DECODED_SIZE
     #[cfg_attr(
         feature = "thiserror",
-        error("More than 259 bytes resulted after decoding SHDLC frame")
+        error(" Too much data to encode or decode, increase the MAX_ENCODED_SIZE or MAX_DENCODED_SIZE")
     )]
-    TooMuchDecodedData,
+    TooMuchData,
+}
+
+// heapless::push returned error
+impl From<u8> for HDLCError {
+    fn from(_: u8) -> Self {
+        Self::TooMuchData
+    }
 }

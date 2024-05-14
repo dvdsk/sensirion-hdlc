@@ -22,11 +22,8 @@ defmt = { version = "0.3", optional = true }
 thiserror = { version = "1.0.38", optional = true }
 serde = { version = "1.0", features = ["derive"], default-features = false, optional = true}
 postcard = { version = "1.0.8", features = ["experimental-derive"], optional = true }
+heapless = { version = "0.8" }
 
-[dependencies.arrayvec]
-version = "0.5.1"
-default-features = false # do not include the default features, and optionally
-                         # cherry-pick individual features
 [features]
 defmt = ["dep:defmt"]
 thiserror = ["dep:thiserror"]
